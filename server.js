@@ -120,8 +120,10 @@ async function sendToWebhook(data) {
     await axios.post(WEBHOOK_URL, data, {
       timeout: 10000,
     });
+    console.log(`✅ Đã gửi webhook cho: ${data.username}`);
   } catch (error) {
-    console.log(`⚠️  Lỗi gửi webhook: ${error.message}`);
+    console.log(`⚠️  Lỗi gửi webhook cho ${data.username}: ${error.message}`);
+    // Không throw error, tiếp tục xử lý accounts khác
   }
 }
 
@@ -130,10 +132,44 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Error handlers - Bắt lỗi để không crash
+process.on("uncaughtException", (error) => {
+  console.error("\n❌ Uncaught Exception:", error);
+  console.error("Stack:", error.stack);
+  // Không exit, server tiếp tục chạy
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("\n❌ Unhandled Rejection at:", promise);
+  console.error("Reason:", reason);
+  // Không exit, server tiếp tục chạy
+});
+
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  console.log("\n🛑 SIGTERM received, shutting down gracefully...");
+  process.exit(0);
+});
+
+process.on("SIGINT", () => {
+  console.log("\n🛑 SIGINT received (Ctrl+C), shutting down gracefully...");
+  process.exit(0);
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`\n🚀 Server đang chạy tại http://localhost:${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
   console.log(`📮 API endpoint: http://localhost:${PORT}/api/process-batch`);
   console.log(`\n⏳ Đang chờ request từ N8N...\n`);
+
+  // Log memory usage every 30s
+  setInterval(() => {
+    const used = process.memoryUsage();
+    console.log(
+      `\n📊 Memory: ${Math.round(used.heapUsed / 1024 / 1024)}MB / ${Math.round(
+        used.heapTotal / 1024 / 1024
+      )}MB`
+    );
+  }, 30000);
 });

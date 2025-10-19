@@ -6,7 +6,7 @@ module.exports = {
 
   // N8N Webhook URL - Nhận kết quả sau khi process
   WEBHOOK_URL:
-    "https://khiemho.app.n8n.cloud/webhook-test/f731f7a5-7bc3-4a72-a5a3-d16309dde622",
+    "https://khiemho.app.n8n.cloud/webhook/f731f7a5-7bc3-4a72-a5a3-d16309dde622",
 
   // Server settings
   SERVER_PORT: 3000,
