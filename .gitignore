@@ -1,0 +1,11 @@
+node_modules/
+*.log
+.DS_Store
+captcha.png
+test_captcha.png
+*.env
+.env.local
+
+# Puppeteer cache
+.cache/
+

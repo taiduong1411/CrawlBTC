@@ -1,0 +1,23 @@
+{
+  "name": "crawlbct",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node index.js",
+    "debug": "node debug-server.js",
+    "test-api": "node test-api.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@antiadmin/anticaptchaofficial": "^1.0.54",
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "puppeteer": "^24.25.0"
+  }
+}
