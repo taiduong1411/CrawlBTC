@@ -1,11 +1,12 @@
 node_modules/
 *.log
 .DS_Store
-captcha.png
-test_captcha.png
-*.env
+.env
 .env.local
+login-result-*.png
+test_captcha.png
+captcha.png
 
 # Puppeteer cache
 .cache/
-
+.local-chromium/
