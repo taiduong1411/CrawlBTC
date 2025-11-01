@@ -1,15 +1,15 @@
 // File config tập trung - Dễ dàng thay đổi cấu hình
+require("dotenv").config();
 
 module.exports = {
-  // Anti-Captcha API Key
-  ANTICAPTCHA_KEY: "88194134685766492a98df9e47f4cff7",
+  // Anti-Captcha API Key - LẤY TỪ ENVIRONMENT VARIABLE
+  ANTICAPTCHA_KEY: process.env.ANTICAPTCHA_KEY || "",
 
   // N8N Webhook URL - Nhận kết quả sau khi process
-  WEBHOOK_URL:
-    "https://khiemho.app.n8n.cloud/webhook/f731f7a5-7bc3-4a72-a5a3-d16309dde622",
+  WEBHOOK_URL: process.env.WEBHOOK_URL || "",
 
-  // Server settings
-  SERVER_PORT: 3000,
+  // Server settings - Railway tự động set PORT
+  SERVER_PORT: process.env.PORT || 3000,
 
   // Website URLs
   LOGIN_URL: "https://dichvucong.moit.gov.vn/Login.aspx",

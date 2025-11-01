@@ -61,9 +61,35 @@ POST `http://localhost:3000/api/process-batch`:
 
 ## 🚂 Deploy to Railway
 
-### 1. Push to GitHub
+### ✅ Pre-deployment Checklist
+
+**Trước khi deploy, đảm bảo:**
+
+- [x] ✅ Railway config files (`railway.json`, `nixpacks.toml`) - DONE
+- [x] ✅ Dependencies (`package.json`) - DONE
+- [x] ✅ Environment variables (`config.js`) - DONE
+- [x] ✅ Browser config for production (`processor.js`) - DONE
+- [x] ✅ `.gitignore` includes `.env` - DONE
+- [ ] ⚠️ **QUAN TRỌNG:** Xóa API key hardcoded khỏi Git history (nếu đã commit)
+
+### 1. Setup Local Environment
 
 ```bash
+# Copy template
+cp .env.example .env
+
+# Edit .env với API keys thật của bạn
+nano .env
+
+# Test local trước
+npm install
+npm start
+```
+
+### 2. Push to GitHub
+
+```bash
+# Nếu chưa có repo
 git init
 git add .
 git commit -m "Initial commit"
@@ -71,29 +97,48 @@ git remote add origin https://github.com/YOUR_USERNAME/crawlbct.git
 git push -u origin main
 ```
 
-### 2. Deploy Railway
+### 3. Deploy Railway
 
 1. Go to [railway.app](https://railway.app)
 2. Sign up with GitHub
 3. Click "New Project" → "Deploy from GitHub repo"
 4. Select `crawlbct` repo
-5. Railway auto deploy!
+5. Railway sẽ tự động:
+   - Detect Node.js project
+   - Install Chromium (via nixpacks.toml)
+   - Build và deploy
 
-### 3. Set Environment Variables
+### 4. Set Environment Variables ⚠️ QUAN TRỌNG
 
-In Railway dashboard → Variables:
+**Railway dashboard → Variables → Add Variables:**
 
+```bash
+ANTICAPTCHA_KEY=88194134685766492a98df9e47f4cff7
+WEBHOOK_URL=https://khiemho.app.n8n.cloud/webhook/f731f7a5-7bc3-4a72-a5a3-d16309dde622
 ```
-ANTICAPTCHA_KEY=your-key
-WEBHOOK_URL=your-webhook-url
-PORT=3000
+
+**Lưu ý:** Railway tự động set `PORT`, không cần thêm thủ công!
+
+### 5. Verify Deployment
+
+```bash
+# Check logs
+Railway dashboard → Deployments → View Logs
+
+# Kiểm tra:
+✅ "Browser đã khởi động!"
+✅ "Server đang chạy tại..."
+✅ No errors
+
+# Test health endpoint
+curl https://your-app.railway.app/health
 ```
 
-### 4. Get Public URL
+### 6. Get Public URL
 
 Railway dashboard → Settings → Generate Domain
 
-You'll get: `https://crawlbct-production.up.railway.app`
+Example: `https://crawlbct-production.up.railway.app`
 
 ## 🔌 API Endpoints
 
@@ -167,6 +212,42 @@ DELAY_BETWEEN_ACCOUNTS_MAX: 10000, // Max delay (ms)
 
 ## 🐛 Troubleshooting
 
+### Railway Deployment Issues
+
+**Build Failed:**
+
+```bash
+# Check logs in Railway dashboard
+Deployments → Build Logs
+
+# Common issues:
+- Missing environment variables → Add in Railway dashboard
+- Node version mismatch → Check package.json engines
+- Chromium install failed → Verify nixpacks.toml
+```
+
+**Runtime Crashed:**
+
+```bash
+# Check runtime logs
+Deployments → Runtime Logs
+
+# Common issues:
+- ANTICAPTCHA_KEY missing → Set in Variables
+- WEBHOOK_URL missing → Set in Variables
+- Browser failed to launch → Check BROWSER_ARGS in config.js
+- Out of memory → Monitor usage, optimize if needed
+```
+
+**Browser Won't Start:**
+
+```javascript
+// Error: "Failed to launch browser"
+// Fix: Đã config sẵn trong processor.js và nixpacks.toml
+// Browser args includes --no-sandbox, --disable-setuid-sandbox
+// Chromium auto-installed via nixpacks
+```
+
 ### Captcha giải sai
 
 - Check API key Anti-Captcha
@@ -181,8 +262,9 @@ DELAY_BETWEEN_ACCOUNTS_MAX: 10000, // Max delay (ms)
 
 ### Out of Memory
 
-- Đảm bảo Railway có đủ RAM (512MB+)
-- Check logs: `railway logs`
+- Monitor usage: Railway dashboard → Metrics
+- Check memory logs (logged every 30s)
+- Usage > $5/month → Consider optimization hoặc upgrade plan
 
 ## 📝 Files Structure
 
@@ -200,8 +282,13 @@ CrawlBCT/
 
 ## 🔒 Security Notes
 
-- ⚠️ Không commit API keys lên Git
-- ⚠️ Dùng Environment Variables
+- ⚠️ **KHÔNG BAO GIỜ** commit API keys lên Git
+- ✅ Dùng Environment Variables (đã config sẵn trong `config.js`)
+- ✅ File `.env` đã được ignore (check `.gitignore`)
+- ⚠️ Nếu đã commit API key nhầm, phải:
+  1. Revoke API key cũ
+  2. Tạo API key mới
+  3. Xóa khỏi Git history: `git filter-branch` hoặc `BFG Repo-Cleaner`
 - ⚠️ Chỉ dùng cho mục đích hợp pháp
 
 ## 📞 Support

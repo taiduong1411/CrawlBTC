@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: crawlbct
+    runtime: node
+    plan: starter
+    buildCommand: |
+      npm ci
+      npx puppeteer browsers install chrome
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: false
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux*/chrome
+
