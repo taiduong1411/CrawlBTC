@@ -113,6 +113,21 @@ async function processAccountsInBatches(accounts, batchSize) {
   console.log(`⏱️  Total duration: ${overallDuration} phút`);
   console.log(`⏰ Finished at: ${new Date().toLocaleString()}`);
   console.log(`${"=".repeat(60)}\n`);
+
+  // Gửi final summary webhook (GỬI ĐẾN WEBHOOK_URL_ALERTS)
+  await sendSummaryWebhook({
+    type: "batch_completed",
+    message: "🎉 Hoàn thành xử lý tất cả accounts!",
+    total: accounts.length,
+    batches: totalBatches,
+    success: overallSuccess,
+    failed: overallFail,
+    successRate: Math.round((overallSuccess / accounts.length) * 100),
+    duration: overallDuration,
+    startTime: new Date(overallStartTime).toISOString(),
+    endTime: new Date().toISOString(),
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Hàm xử lý 1 batch accounts
@@ -137,13 +152,14 @@ async function processAccountsBatch(accounts, batchNum = 1, totalBatches = 1) {
         successCount++;
         console.log(`✅ ${progress} Thành công: ${account.username}`);
 
-        // Gửi kết quả về webhook N8N
+        // Gửi webhook khi SUCCESS với email và phone thật
         await sendToWebhook({
+          type: "account_success",
           username: account.username,
-          status: "success",
-          email: result.email,
-          phone: result.phone,
+          email: result.email || "",
+          phone: result.phone || "",
           batch: batchNum,
+          status: "success",
           timestamp: new Date().toISOString(),
         });
       } else {
@@ -152,26 +168,22 @@ async function processAccountsBatch(accounts, batchNum = 1, totalBatches = 1) {
           `❌ ${progress} Thất bại: ${account.username} - ${result.error}`
         );
 
-        // Vẫn gửi về webhook để update status
+        // Gửi webhook khi FAILED với email và phone empty
         await sendToWebhook({
+          type: "account_failed",
           username: account.username,
-          status: "failed",
+          email: "",
+          phone: "",
           error: result.error,
           batch: batchNum,
+          status: "failed",
           timestamp: new Date().toISOString(),
         });
       }
     } catch (error) {
       failCount++;
       console.log(`❌ ${progress} Lỗi: ${account.username} - ${error.message}`);
-
-      await sendToWebhook({
-        username: account.username,
-        status: "error",
-        error: error.message,
-        batch: batchNum,
-        timestamp: new Date().toISOString(),
-      });
+      // KHÔNG gửi webhook cho error (sẽ gửi system error riêng nếu cần)
     }
 
     // Delay giữa các account để tránh bị block (5-10s)
@@ -200,7 +212,7 @@ async function processAccountsBatch(accounts, batchNum = 1, totalBatches = 1) {
   };
 }
 
-// Hàm gửi kết quả về webhook N8N
+// Hàm gửi kết quả account success về webhook N8N cũ
 async function sendToWebhook(data) {
   const axios = require("axios");
   try {
@@ -211,6 +223,20 @@ async function sendToWebhook(data) {
   } catch (error) {
     console.log(`⚠️  Lỗi gửi webhook cho ${data.username}: ${error.message}`);
     // Không throw error, tiếp tục xử lý accounts khác
+  }
+}
+
+// Hàm gửi summary về webhook alerts mới
+async function sendSummaryWebhook(data) {
+  const axios = require("axios");
+  const WEBHOOK_URL_ALERTS = config.WEBHOOK_URL_ALERTS;
+  try {
+    await axios.post(WEBHOOK_URL_ALERTS, data, {
+      timeout: 10000,
+    });
+    console.log(`✅ Đã gửi summary webhook`);
+  } catch (error) {
+    console.log(`⚠️  Lỗi gửi summary webhook: ${error.message}`);
   }
 }
 

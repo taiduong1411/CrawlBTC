@@ -64,7 +64,7 @@ async function autoLogin(username, password) {
     console.log("Đã lấy captcha, đang gửi đến anti-captcha...");
 
     // Cấu hình anti-captcha
-    ac.setAPIKey("88194134685766492a98df9e47f4cff7");
+    ac.setAPIKey("2ccc6e004ddae9bd6c899ab834ad9ead");
     ac.setSoftId(0);
 
     // Giải captcha
@@ -98,7 +98,7 @@ async function autoLogin(username, password) {
     await page.click("#ctl00_cplhContainer_btnLogin");
 
     // Đợi chuyển trang sau khi đăng nhập
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 7000));
 
     // Kiểm tra xem đăng nhập có thành công không
     const currentURL = page.url();
@@ -218,7 +218,7 @@ async function autoLogin(username, password) {
 }
 
 // Chạy với thông tin đăng nhập
-const username = "1101991077";
-const password = "1101991077";
+const username = "0100942205004";
+const password = "0100942205004";
 
 autoLogin(username, password);

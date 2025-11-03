@@ -5,8 +5,11 @@ module.exports = {
   // Anti-Captcha API Key - LẤY TỪ ENVIRONMENT VARIABLE
   ANTICAPTCHA_KEY: process.env.ANTICAPTCHA_KEY || "",
 
-  // N8N Webhook URL - Nhận kết quả sau khi process
+  // N8N Webhook URL - Nhận kết quả account success
   WEBHOOK_URL: process.env.WEBHOOK_URL || "",
+
+  // Webhook URL cho thông báo lỗi hệ thống và summary
+  WEBHOOK_URL_ALERTS: process.env.WEBHOOK_URL_ALERTS || "",
 
   // Server settings - Railway tự động set PORT
   SERVER_PORT: process.env.PORT || 3000,
