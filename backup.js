@@ -408,56 +408,24 @@ async function processAccount(username, password) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     const businessInfo = await page.evaluate(() => {
-      // Email từ trang MyBusinessInfo (RepresenterEmail)
       const emailInput = document.querySelector(
         'input[name*="RepresenterEmail"]'
       );
-
-      // Email từ trang Thông tin tài khoản (txtUserEmail)
-      const userEmailInput = document.querySelector(
-        "#ctl00_cplhContainer_txtUserEmail"
-      );
-
       const mobileInput = document.querySelector(
         'input[name*="RepresenterMobile"]'
       );
 
       return {
         email: emailInput ? emailInput.value : "",
-        userEmail: userEmailInput ? userEmailInput.value : "",
         mobile: mobileInput ? mobileInput.value : "",
       };
     });
-
-    // Kết hợp cả 2 emails, ngăn cách bằng dấu ;
-    const emails = [];
-    if (businessInfo.userEmail && businessInfo.userEmail.trim()) {
-      emails.push(businessInfo.userEmail.trim());
-    }
-    if (businessInfo.email && businessInfo.email.trim()) {
-      emails.push(businessInfo.email.trim());
-    }
-
-    // Loại bỏ duplicate (nếu 2 emails trùng nhau thì chỉ lấy 1)
-    const uniqueEmails = [...new Set(emails)];
-
-    // Kết hợp bằng dấu ; (nếu có 2 emails khác nhau) hoặc chỉ 1 email nếu trùng
-    const finalEmail = uniqueEmails.join(";");
-
-    console.log(
-      `   📧 Email từ RepresenterEmail: ${businessInfo.email || "N/A"}`
-    );
-    console.log(
-      `   📧 Email từ txtUserEmail: ${businessInfo.userEmail || "N/A"}`
-    );
-    console.log(`   📧 Email cuối cùng: ${finalEmail || "N/A"}`);
-    console.log(`   📱 Phone: ${businessInfo.mobile || "N/A"}`);
 
     await page.close();
 
     return {
       success: true,
-      email: finalEmail,
+      email: businessInfo.email,
       phone: businessInfo.mobile,
     };
   } catch (error) {
