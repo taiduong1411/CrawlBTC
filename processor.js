@@ -442,7 +442,7 @@ async function processAccount(username, password) {
     const uniqueEmails = [...new Set(emails)];
 
     // Kết hợp bằng dấu ; (nếu có 2 emails khác nhau) hoặc chỉ 1 email nếu trùng
-    const finalEmail = uniqueEmails.join(";");
+    const finalEmail = uniqueEmails.join(", ");
 
     console.log(
       `   📧 Email từ RepresenterEmail: ${businessInfo.email || "N/A"}`
