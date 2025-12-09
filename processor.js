@@ -24,8 +24,8 @@ async function sendSystemErrorWebhook(errorData) {
 
 // Tài khoản "dummy" để tránh bị khóa khi đăng nhập sai nhiều lần
 const DUMMY_ACCOUNT = {
-  username: "0100942205004",
-  password: "0100942205004",
+  username: "0309578981",
+  password: "0309578981",
 };
 
 // Hàm thử đăng nhập 1 lần với captcha
